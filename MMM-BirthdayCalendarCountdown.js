@@ -55,7 +55,7 @@ Module.register("MMM-BirthdayCalendarCountdown", {
      * Build the module's DOM elements.
      */
     getDom: function () {
-        var wrapper = document.createElement("div");
+        var wrapper = document.createElement("div");        
         var now = new Date(Date.now());
         var oneDayMs = 24 * 60 * 60 * 1000;
         var windowMs = this.config.upcomingWindowDays * oneDayMs;
@@ -73,6 +73,8 @@ Module.register("MMM-BirthdayCalendarCountdown", {
                                  </div>`;
             return wrapper;
         }
+
+        wrapper.classList.add("event-wrapper");
 
         // Limit the number of events displayed.
         var eventsToShow = upcomingEvents.slice(0, this.config.maxDisplay);
