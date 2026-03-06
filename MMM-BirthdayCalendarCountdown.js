@@ -1,3 +1,15 @@
+
+// function to better handle variety of incoming date values
+function toDate(value) {
+  if (value instanceof Date) return value;
+  
+  if (typeof value === 'number') return new Date(value)
+  if (typeof value === 'string' && value == +value) return new Date(+value)
+
+  // TODO: is better error handling needed?
+  return new Date(value);
+}
+
 Module.register("MMM-BirthdayCalendarCountdown", {
     // Module default configuration.
     defaults: {
@@ -34,7 +46,7 @@ Module.register("MMM-BirthdayCalendarCountdown", {
                 return false;
             });
             // Sort the events by their start date (soonest first).
-            this.filteredEvents.sort((a, b) => new Date(a.startDate) - new Date(b.startDate));
+            this.filteredEvents.sort((a, b) => toDate(a.startDate) - toDate(b.startDate));
             this.updateDom();
         }
     },
@@ -44,13 +56,13 @@ Module.register("MMM-BirthdayCalendarCountdown", {
      */
     getDom: function () {
         var wrapper = document.createElement("div");
-        var now = new Date();
+        var now = new Date(Date.now());
         var oneDayMs = 24 * 60 * 60 * 1000;
         var windowMs = this.config.upcomingWindowDays * oneDayMs;
 
         // Filter out events that have already occurred or are outside the display window.
         var upcomingEvents = this.filteredEvents.filter(event => {
-            var eventDate = new Date(event.startDate);
+            var eventDate = toDate(event.startDate);
             return eventDate >= now && (eventDate - now <= windowMs);
         });
 
@@ -70,7 +82,7 @@ Module.register("MMM-BirthdayCalendarCountdown", {
             eventDiv.classList.add("event-item");
 
             // Convert the event's startDate to a Date object.
-            var eventDate = new Date(event.startDate);
+            var eventDate = toDate(event.startDate);
             var dateStr = eventDate.toLocaleString();
 
             // Create a div for the event title.
