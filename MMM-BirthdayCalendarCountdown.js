@@ -75,6 +75,7 @@ Module.register("MMM-BirthdayCalendarCountdown", {
         }
 
         wrapper.classList.add("event-wrapper");
+        const formatter = new Intl.DateTimeFormat(undefined, { year: "numeric", month: "long", day: "numeric" });
 
         // Limit the number of events displayed.
         var eventsToShow = upcomingEvents.slice(0, this.config.maxDisplay);
@@ -85,7 +86,7 @@ Module.register("MMM-BirthdayCalendarCountdown", {
 
             // Convert the event's startDate to a Date object.
             var eventDate = toDate(event.startDate);
-            var dateStr = eventDate.toLocaleString();
+            var dateStr = formatter.format(eventDate);
 
             // Create a div for the event title.
             var titleDiv = document.createElement("div");
@@ -125,17 +126,17 @@ Module.register("MMM-BirthdayCalendarCountdown", {
         var diff = targetDate - currentDate;
         if (diff <= 0) return "It's happening now!";
 
-        const seconds = Math.floor(diff / 1000) % 60;
-        const minutes = Math.floor(diff / (1000 * 60)) % 60;
-        const hours = Math.floor(diff / (1000 * 60 * 60)) % 24;
-        const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+        // const seconds = Math.floor(diff / 1000) % 60;
+        // const minutes = Math.floor(diff / (1000 * 60)) % 60;
+        // const hours = Math.floor(diff / (1000 * 60 * 60)) % 24;
+        const days = Math.floor(diff / (1000 * 60 * 60 * 24)) + 1;
 
         const parts = [];
         if (days > 0) parts.push(`${days} day${days !== 1 ? "s" : ""}`);
-        if (hours > 0) parts.push(`${hours} hour${hours !== 1 ? "s" : ""}`);
-        if (minutes > 0) parts.push(`${minutes} minute${minutes !== 1 ? "s" : ""}`);
-        // Display seconds only if less than one day remains.
-        if (days === 0) parts.push(`${seconds} second${seconds !== 1 ? "s" : ""}`);
+        // if (hours > 0) parts.push(`${hours} hour${hours !== 1 ? "s" : ""}`);
+        // if (minutes > 0) parts.push(`${minutes} minute${minutes !== 1 ? "s" : ""}`);
+        // // Display seconds only if less than one day remains.
+        // if (days === 0) parts.push(`${seconds} second${seconds !== 1 ? "s" : ""}`);
 
         return "Countdown: " + parts.join(", ");
     }
