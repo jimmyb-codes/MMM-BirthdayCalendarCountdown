@@ -2,7 +2,7 @@
 // function to better handle variety of incoming date values
 function toDate(value) {
   if (value instanceof Date) return value;
-  
+
   if (typeof value === 'number') return new Date(value)
   if (typeof value === 'string' && value == +value) return new Date(+value)
 
@@ -17,6 +17,7 @@ Module.register("MMM-BirthdayCalendarCountdown", {
         countdownStartDays: 7,      // Show countdown if event is within 7 days from now
         upcomingWindowDays: 30,     // Only display birthdays occurring within 30 days from now
         maxDisplay: 5,              // Maximum number of matching events to display
+        wholeDaysOnly: false,       // if true display countdown in whole days, otherwise display hours and minutes in count down
         searchKeyword: "birthday",  // Keyword to filter calendar events (case-insensitive)
         calendarSet: [],            // Only look for keywords in these calendars
     },
@@ -60,7 +61,7 @@ Module.register("MMM-BirthdayCalendarCountdown", {
      * Build the module's DOM elements.
      */
     getDom: function () {
-        var wrapper = document.createElement("div");        
+        var wrapper = document.createElement("div");
         var now = new Date(Date.now());
         var oneDayMs = 24 * 60 * 60 * 1000;
         var windowMs = this.config.upcomingWindowDays * oneDayMs;
@@ -108,11 +109,15 @@ Module.register("MMM-BirthdayCalendarCountdown", {
 
             // Calculate the time difference between the event and now.
             var diff = eventDate - now;
-            // If the event is in the future and within the countdown window, add a countdown.
-            if (diff > 0 && diff <= this.config.countdownStartDays * oneDayMs) {
+            // If the event is within the countdown window, add a countdown.
+            if (diff <= this.config.countdownStartDays * oneDayMs) {
                 var countdownDiv = document.createElement("div");
                 countdownDiv.classList.add("event-countdown");
-                countdownDiv.textContent = this.getCountdownText(eventDate, now);
+                if(this.config.wholeDaysOnly) {
+                    countdownDiv.textContent = this.getWholeDayCountdownText(eventDate, now);
+                } else {
+                    countdownDiv.textContent = this.getDetailedCountdownText(eventDate, now);
+                }
                 eventDiv.appendChild(countdownDiv);
             }
             wrapper.appendChild(eventDiv);
@@ -127,7 +132,7 @@ Module.register("MMM-BirthdayCalendarCountdown", {
      * @param {Date} currentDate - The current date/time.
      * @returns {string} Countdown string.
      */
-    getCountdownText: function (targetDate, currentDate) {
+    getDetailedCountdownText: function (targetDate, currentDate) {
         var diff = targetDate - currentDate;
         if (diff <= 0) return "It's happening now!";
 
@@ -144,5 +149,23 @@ Module.register("MMM-BirthdayCalendarCountdown", {
         if (days === 0) parts.push(`${seconds} second${seconds !== 1 ? "s" : ""}`);
 
         return "Countdown: " + parts.join(", ");
-    }
+    },
+
+        /**
+     * Returns countdown string (in whole days) from the current time until targetDate.
+     *
+     * @param {Date} targetDate - The event's date/time.
+     * @param {Date} currentDate - The current date/time.
+     * @returns {string} Countdown string.
+     */
+    getWholeDayCountdownText: function (targetDate, currentDate) {
+        const startOfDayUTC = (d) => Date.UTC(d.getFullYear(), d.getMonth(), d.getDate());
+
+        const diff = startOfDayUTC(b) - startOfDayUTC(a);
+        const days = Math.round(diff / (1000 * 60 * 60 * 24));
+
+        if (days <= 0) return "It's today!";
+
+        return "Countdown: " + `${days} day${days !== 1 ? "s" : ""}`;
+    },
 });
