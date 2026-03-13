@@ -164,7 +164,7 @@ Module.register("MMM-BirthdayCalendarCountdown", {
     getWholeDayCountdownText: function (targetDate, currentDate) {
         const startOfDayUTC = (d) => Date.UTC(d.getFullYear(), d.getMonth(), d.getDate());
 
-        const diff = startOfDayUTC(b) - startOfDayUTC(a);
+        const diff = startOfDayUTC(targetDate) - startOfDayUTC(currentDate);
         const days = Math.round(diff / (1000 * 60 * 60 * 24));
 
         if (days <= 0) return "It's today!";
