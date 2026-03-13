@@ -39,7 +39,7 @@ Module.register("MMM-BirthdayCalendarCountdown", {
      */
     notificationReceived: function (notification, payload, sender) {
         if (notification === "CALENDAR_EVENTS") {
-            const calendarSet = (Array.isArray(config.calendarSet)) ? [ ...config.calendarSet ] : []
+            const calendarSet = (Array.isArray(this.config.calendarSet)) ? [ ...this.config.calendarSet ] : []
 
             // Filter events based on the configurable search keyword.
             this.filteredEvents = payload.filter(event => {
@@ -80,6 +80,7 @@ Module.register("MMM-BirthdayCalendarCountdown", {
         }
 
         wrapper.classList.add("event-wrapper");
+        const formatter = new Intl.DateTimeFormat(undefined, { year: "numeric", month: "long", day: "numeric" });
 
         // Limit the number of events displayed.
         var eventsToShow = upcomingEvents.slice(0, this.config.maxDisplay);
@@ -90,7 +91,7 @@ Module.register("MMM-BirthdayCalendarCountdown", {
 
             // Convert the event's startDate to a Date object.
             var eventDate = toDate(event.startDate);
-            var dateStr = eventDate.toLocaleString();
+            var dateStr = formatter.format(eventDate)
 
             // Create a div for the event title.
             var titleDiv = document.createElement("div");
