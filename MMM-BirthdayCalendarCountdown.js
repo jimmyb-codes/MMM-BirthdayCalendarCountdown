@@ -81,7 +81,10 @@ Module.register("MMM-BirthdayCalendarCountdown", {
         }
 
         wrapper.classList.add("event-wrapper");
-        const formatter = new Intl.DateTimeFormat(undefined, { year: "numeric", month: "long", day: "numeric" });
+        const formatterOptions = this.config.wholeDaysOnly ?
+            { year: "numeric", month: "long", day: "numeric" } :
+            { dateStyle: "medium", timeStyle: "medium" };
+        const formatter = new Intl.DateTimeFormat(undefined, formatterOptions);
 
         // Limit the number of events displayed.
         var eventsToShow = upcomingEvents.slice(0, this.config.maxDisplay);
