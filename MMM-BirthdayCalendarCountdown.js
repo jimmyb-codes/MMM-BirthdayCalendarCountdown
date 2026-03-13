@@ -17,7 +17,8 @@ Module.register("MMM-BirthdayCalendarCountdown", {
         countdownStartDays: 7,      // Show countdown if event is within 7 days from now
         upcomingWindowDays: 30,     // Only display birthdays occurring within 30 days from now
         maxDisplay: 5,              // Maximum number of matching events to display
-        searchKeyword: "birthday"   // Keyword to filter calendar events (case-insensitive)
+        searchKeyword: "birthday",  // Keyword to filter calendar events (case-insensitive)
+        calendarSet: [],            // Only look for keywords in these calendars
     },
 
     start: function () {
@@ -38,10 +39,14 @@ Module.register("MMM-BirthdayCalendarCountdown", {
      */
     notificationReceived: function (notification, payload, sender) {
         if (notification === "CALENDAR_EVENTS") {
+            const calendarSet = (Array.isArray(config.calendarSet)) ? [ ...config.calendarSet ] : []
+
             // Filter events based on the configurable search keyword.
             this.filteredEvents = payload.filter(event => {
-                if (event.title && typeof event.title === "string") {
-                    return event.title.toLowerCase().includes(this.config.searchKeyword.toLowerCase());
+                if (calendarSet.length === 0 || calendarSet.includes(event.calendarName)) {
+                    if (event.title && typeof event.title === "string") {
+                        return event.title.toLowerCase().includes(this.config.searchKeyword.toLowerCase());
+                    }
                 }
                 return false;
             });
